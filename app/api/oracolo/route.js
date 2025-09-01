@@ -26,7 +26,12 @@ export async function GET() {
     const data = await res.json();
     const oracolo = data.choices[0].message.content;
 
-    return Response.json({ message: oracolo });
+    return new Response(JSON.stringify({ message: oracolo }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store" // 🔥 evita che Vercel salvi la risposta
+      }
+    });
   } catch (error) {
     return Response.json({ message: "Errore nel generare l'oracolo 🌑" });
   }
