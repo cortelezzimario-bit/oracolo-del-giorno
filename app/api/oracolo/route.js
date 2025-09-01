@@ -1,38 +1,17 @@
-import { NextResponse } from "next/server";
-
 export async function GET() {
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: "Sei un oracolo misterioso. Genera una frase breve, profonda, unica e diversa ogni volta, in italiano, come un consiglio o una profezia.",
-          },
-          {
-            role: "user",
-            content: "Dammi l’oracolo del giorno, cambia ogni richiesta.",
-          },
-        ],
-        max_tokens: 60,
-        temperature: 1.2, // più creativo
-        top_p: 1,
-        presence_penalty: 0.8, // evita ripetizioni
-        frequency_penalty: 0.8, // evita frasi già dette
-      }),
-    });
+  const oracoli = [
+    "Oggi è un buon giorno per iniziare qualcosa di nuovo 🌞",
+    "La pazienza è la chiave per aprire ogni porta 🔑",
+    "Un incontro inatteso porterà fortuna 🍀",
+    "Segui il tuo istinto, conosce la strada 🧭",
+    "La tua energia attirerà cose positive ✨",
+    "Nel silenzio della notte, ascolta il battito del tuo cuore; è lì che risiede la verità."
+  ];
 
-    const data = await response.json();
-    const message = data.choices?.[0]?.message?.content || "Silenzio dagli dei…";
+  // Scegli uno a caso
+  const messaggio = oracoli[Math.floor(Math.random() * oracoli.length)];
 
-    return NextResponse.json({ message });
-  } catch (error) {
-    return NextResponse.json({ error: "Errore nella generazione dell’oracolo" }, { status: 500 });
-  }
+  return new Response(JSON.stringify({ message: messaggio }), {
+    headers: { "Content-Type": "application/json" },
+  });
 }
