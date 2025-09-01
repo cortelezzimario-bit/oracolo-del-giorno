@@ -8,7 +8,11 @@ export default function Home() {
   const getOracolo = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/oracolo", { cache: "no-store" }); // evita cache
+      // Aggiungo timestamp per evitare qualunque cache
+      const res = await fetch(`/api/oracolo?ts=${Date.now()}`, {
+        cache: "no-store",
+      });
+
       const data = await res.json();
       setOracolo(data.message);
       console.log("Nuovo oracolo:", data.message);
