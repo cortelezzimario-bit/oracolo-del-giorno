@@ -1,8 +1,33 @@
-import { NextResponse } from "next/server";
-
 export async function GET() {
-  // Questa è una risposta di test, poi ci colleghiamo a OpenAI
-  return NextResponse.json({
-    message: "Oggi è un buon giorno per iniziare qualcosa di nuovo 🌞",
-  });
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "Sei un oracolo misterioso. Genera una frase breve e profonda, in italiano, diversa ogni volta, come se fosse un consiglio o una profezia."
+          },
+          {
+            role: "user",
+            content: "Dammi l’oracolo del giorno."
+          }
+        ],
+        max_tokens: 60,
+        temperature: 0.9
+      })
+    });
+
+    const data = await res.json();
+    const oracolo = data.choices[0].message.content;
+
+    return Response.json({ message: oracolo });
+  } catch (error) {
+    return Response.json({ message: "Errore nel generare l'oracolo 🌑" });
+  }
 }
