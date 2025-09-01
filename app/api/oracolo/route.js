@@ -2,24 +2,24 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // Chiamata al modello OpenAI GPT
+    // Chiamata a OpenAI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, // 🔑 chiave da Vercel
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // modello veloce ed economico
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
             content:
-              "Sei un oracolo misterioso. Genera ogni volta una frase breve, profonda, unica e diversa in italiano, come predizione, consiglio o profezia. Non ripetere mai le stesse frasi.",
+              "Sei un oracolo misterioso. Genera SEMPRE una frase breve, profonda, unica e diversa ogni volta, in italiano, come se fosse un consiglio, predizione o profezia.",
           },
           {
             role: "user",
-            content: "Dammi l’oracolo del giorno, diverso ad ogni richiesta.",
+            content: "Dammi l’oracolo del giorno, cambia ogni richiesta.",
           },
         ],
         max_tokens: 60,
@@ -37,11 +37,15 @@ export async function GET() {
     return NextResponse.json(
       { message: messaggio },
       {
-        headers: { "Cache-Control": "no-store" }, // evita cache
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
       }
     );
   } catch (error) {
-    console.error("Errore API:", error);
+    console.error("Errore OpenAI:", error);
     return NextResponse.json(
       { message: "Errore nella generazione dell’oracolo 🌑" },
       { status: 500 }
