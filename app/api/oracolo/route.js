@@ -1,23 +1,47 @@
+import { NextResponse } from "next/server";
+
 export async function GET() {
-  const oracoli = [
-    "Oggi è un buon giorno per iniziare qualcosa di nuovo 🌞",
-    "La pazienza è la chiave che apre tutte le porte 🔑",
-    "Nel silenzio scoprirai la tua vera forza 🌌",
-    "Un piccolo passo oggi, un grande cambiamento domani 🚀",
-    "Sorridi: il mondo ti risponderà con la stessa energia ✨",
-    "Il coraggio non è non avere paura, ma andare avanti nonostante essa 🦁",
-    "Ogni fine è solo un nuovo inizio 🌱"
-  ];
+  try {
+    // Chiamata a OpenAI GPT-4o-mini
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "Sei un oracolo misterioso. Genera una frase breve, profonda, unica e diversa ogni volta, in italiano, come un consiglio, predizione o profezia."
+          },
+          {
+            role: "user",
+            content: "Dammi l’oracolo del giorno, cambia ogni richiesta."
+          }
+        ],
+        max_tokens: 60,
+        temperature: 1.2,
+        top_p: 1,
+        presence_penalty: 0.8,
+        frequency_penalty: 0.8
+      }),
+    });
 
-  // Prende un oracolo a caso
-  const random = Math.floor(Math.random() * oracoli.length);
-  const messaggio = oracoli[random];
+    const data = await response.json();
+    const messaggio = data.choices?.[0]?.message?.content || "Silenzio dagli dei…";
 
-  return new Response(
-    JSON.stringify({ message: messaggio }),
-    {
-      headers: { "Content-Type": "application/json" },
-      status: 200
-    }
-  );
+    return NextResponse.json(
+      { message: messaggio },
+      {
+        headers: { "Cache-Control": "no-store" }, // evita cache
+      }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Errore nella generazione dell’oracolo 🌑" },
+      { status: 500 }
+    );
+  }
 }
