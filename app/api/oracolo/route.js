@@ -1,3 +1,7 @@
+// 🚫 Disabilita ogni forma di cache su Next.js/Vercel
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -31,6 +35,7 @@ export async function GET() {
     });
 
     const data = await response.json();
+
     const messaggio =
       data.choices?.[0]?.message?.content || "Silenzio dagli dei…";
 
@@ -38,7 +43,8 @@ export async function GET() {
       { message: messaggio },
       {
         headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
           Pragma: "no-cache",
           Expires: "0",
         },
