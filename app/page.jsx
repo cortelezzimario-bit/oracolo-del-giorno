@@ -8,7 +8,8 @@ export default function Home() {
   const getOracolo = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/oracolo", {
+      // aggiungiamo un numero casuale all’URL per evitare cache
+      const res = await fetch(`/api/oracolo?rnd=${Date.now()}`, {
         method: "GET",
         cache: "no-store",
         headers: { "Cache-Control": "no-cache" },
