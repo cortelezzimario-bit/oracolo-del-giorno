@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req) {
   try {
+    // Logghiamo l’orario e l’ID richiesta per capire se arriva al server
+    console.log("🔮 Richiesta ricevuta:", new Date().toISOString(), req.url);
+
+    // Chiamata a OpenAI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -14,24 +18,26 @@ export async function GET() {
           {
             role: "system",
             content:
-              "Sei un oracolo misterioso. Ogni volta che vieni interrogato, genera UNA frase breve, incisiva, poetica ed emozionante, diversa da tutte le precedenti. Scrivi in italiano. Pochi secondi di lettura, ma che lasciano un segno.",
+              "Sei un oracolo misterioso. Genera SEMPRE una frase breve, profonda, unica e diversa ogni volta, in italiano, come se fosse un consiglio, predizione o profezia.",
           },
           {
             role: "user",
-            content: "Dammi un oracolo unico e diverso.",
+            content: "Dammi l’oracolo del giorno, cambia ogni richiesta.",
           },
         ],
         max_tokens: 60,
-        temperature: 1.3, // più alto = più creativo
+        temperature: 1.2,
         top_p: 1,
-        presence_penalty: 1.0, // evita ripetizioni
-        frequency_penalty: 1.0,
+        presence_penalty: 0.8,
+        frequency_penalty: 0.8,
       }),
     });
 
     const data = await response.json();
     const messaggio =
-      data.choices?.[0]?.message?.content?.trim() || "Silenzio dagli dei…";
+      data.choices?.[0]?.message?.content || "Silenzio dagli dei…";
+
+    console.log("✨ Oracolo generato:", messaggio);
 
     return NextResponse.json(
       { message: messaggio },
@@ -44,7 +50,7 @@ export async function GET() {
       }
     );
   } catch (error) {
-    console.error("Errore OpenAI:", error);
+    console.error("❌ Errore OpenAI:", error);
     return NextResponse.json(
       { message: "Errore nella generazione dell’oracolo 🌑" },
       { status: 500 }
