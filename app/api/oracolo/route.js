@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 
-export async function GET(req) {
+export async function GET() {
   try {
-    // Logghiamo l’orario e l’ID richiesta per capire se arriva al server
-    console.log("🔮 Richiesta ricevuta:", new Date().toISOString(), req.url);
-
     // Chiamata a OpenAI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -18,26 +15,28 @@ export async function GET(req) {
           {
             role: "system",
             content:
-              "Sei un oracolo misterioso. Genera SEMPRE una frase breve, profonda, unica e diversa ogni volta, in italiano, come se fosse un consiglio, predizione o profezia.",
+              "Sei un oracolo positivo e motivante. Genera SEMPRE una frase breve (massimo 20 parole), in italiano, semplice da capire, che provochi subito emozioni positive. La frase deve ispirare fiducia, serenità e coraggio, con consigli pratici o incoraggianti per affrontare la giornata con leggerezza e ottimismo."
           },
           {
             role: "user",
-            content: "Dammi l’oracolo del giorno, cambia ogni richiesta.",
-          },
+            content: "Dammi un oracolo motivante e diverso ogni volta."
+          }
         ],
         max_tokens: 60,
-        temperature: 1.2,
+        temperature: 1.3,
         top_p: 1,
-        presence_penalty: 0.8,
-        frequency_penalty: 0.8,
+        presence_penalty: 0.9,
+        frequency_penalty: 0.9,
       }),
     });
 
     const data = await response.json();
-    const messaggio =
-      data.choices?.[0]?.message?.content || "Silenzio dagli dei…";
 
-    console.log("✨ Oracolo generato:", messaggio);
+    // Log utile su Vercel
+    console.log("Risposta OpenAI:", JSON.stringify(data, null, 2));
+
+    const messaggio =
+      data.choices?.[0]?.message?.content || "Oggi trova forza dentro di te 🌞";
 
     return NextResponse.json(
       { message: messaggio },
@@ -50,7 +49,7 @@ export async function GET(req) {
       }
     );
   } catch (error) {
-    console.error("❌ Errore OpenAI:", error);
+    console.error("Errore OpenAI:", error);
     return NextResponse.json(
       { message: "Errore nella generazione dell’oracolo 🌑" },
       { status: 500 }
