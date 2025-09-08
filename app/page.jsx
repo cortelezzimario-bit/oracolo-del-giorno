@@ -8,7 +8,6 @@ export default function Home() {
   const getOracolo = async () => {
     setLoading(true);
     try {
-      // Chiamata API senza cache
       const res = await fetch("/api/oracolo", {
         method: "GET",
         cache: "no-store",
