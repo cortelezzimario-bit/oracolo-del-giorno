@@ -1,7 +1,3 @@
-// 🚫 Disabilita ogni forma di cache su Next.js/Vercel
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -18,33 +14,37 @@ export async function GET() {
         messages: [
           {
             role: "system",
-            content:
-              "Sei un oracolo misterioso. Genera SEMPRE una frase breve, profonda, unica e diversa ogni volta, in italiano, come se fosse un consiglio, predizione o profezia.",
+            content: `
+              Sei l'Oracolo Antico.
+              Ogni volta che ti viene chiesto, pronunci una profezia breve e unica.
+              Le tue parole devono sembrare scolpite nel tempo: misteriose, intense, poetiche.
+              Usa al massimo 15 parole.
+              Evita frasi comuni: ogni oracolo deve emozionare, sorprendere, restare impresso nella memoria.
+              Scrivi SEMPRE in italiano.
+            `,
           },
           {
             role: "user",
-            content: "Dammi l’oracolo del giorno, cambia ogni richiesta.",
+            content: "Dammi un oracolo.",
           },
         ],
         max_tokens: 60,
-        temperature: 1.2,
+        temperature: 1.3,
         top_p: 1,
-        presence_penalty: 0.8,
-        frequency_penalty: 0.8,
+        presence_penalty: 1,
+        frequency_penalty: 1,
       }),
     });
 
     const data = await response.json();
-
     const messaggio =
-      data.choices?.[0]?.message?.content || "Silenzio dagli dei…";
+      data.choices?.[0]?.message?.content?.trim() || "Silenzio dagli dei…";
 
     return NextResponse.json(
       { message: messaggio },
       {
         headers: {
-          "Cache-Control":
-            "no-store, no-cache, must-revalidate, proxy-revalidate",
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
           Pragma: "no-cache",
           Expires: "0",
         },
