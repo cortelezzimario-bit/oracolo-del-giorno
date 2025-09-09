@@ -4,12 +4,12 @@ import { useState } from "react";
 export default function Home() {
   const [oracolo, setOracolo] = useState("Premi il pulsante per ricevere un oracolo ✨");
   const [loading, setLoading] = useState(false);
+  const [lang, setLang] = useState("it"); // lingua di default
 
   const getOracolo = async () => {
     setLoading(true);
     try {
-      // aggiungiamo un numero casuale all’URL per evitare cache
-      const res = await fetch(`/api/oracolo?rnd=${Date.now()}`, {
+      const res = await fetch(`/api/oracolo?lang=${lang}&rnd=${Date.now()}`, {
         method: "GET",
         cache: "no-store",
         headers: { "Cache-Control": "no-cache" },
@@ -29,6 +29,22 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <h1 className="text-3xl font-bold mb-6">Oracolo del Giorno 🔮</h1>
+
+      {/* Menu a tendina per scegliere la lingua */}
+      <select
+        value={lang}
+        onChange={(e) => setLang(e.target.value)}
+        className="mb-4 p-2 border rounded"
+      >
+        <option value="it">Italiano 🇮🇹</option>
+        <option value="en">English 🇬🇧</option>
+        <option value="es">Español 🇪🇸</option>
+        <option value="fr">Français 🇫🇷</option>
+        <option value="de">Deutsch 🇩🇪</option>
+        <option value="ru">Русский 🇷🇺</option>
+        <option value="zh">中文 🇨🇳</option>
+      </select>
+
       <p className="text-xl mb-6 text-center">{oracolo}</p>
       <button
         onClick={getOracolo}
