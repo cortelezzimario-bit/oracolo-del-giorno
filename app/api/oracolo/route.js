@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 
 export async function GET(req) {
   try {
-    // Logghiamo l’orario e l’ID richiesta per capire se arriva al server
     console.log("🔮 Richiesta ricevuta:", new Date().toISOString(), req.url);
 
-    // Chiamata a OpenAI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -18,7 +16,7 @@ export async function GET(req) {
           {
             role: "system",
             content:
-              "Sei un oracolo misterioso. Genera SEMPRE una frase breve, profonda, unica e diversa ogni volta, in italiano, come se fosse un consiglio, predizione o profezia.",
+              "Sei un oracolo motivazionale e luminoso. Genera SEMPRE una frase breve, unica e diversa ogni volta, in italiano. Le tue frasi devono essere semplici, emozionali e facili da ricordare: devono ispirare fiducia, serenità e positività immediata. Evita linguaggio troppo ermetico o oscuro: punta a lasciare un sorriso o una piccola illuminazione interiore.",
           },
           {
             role: "user",
@@ -43,7 +41,8 @@ export async function GET(req) {
       { message: messaggio },
       {
         headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
           Pragma: "no-cache",
           Expires: "0",
         },
@@ -56,5 +55,4 @@ export async function GET(req) {
       { status: 500 }
     );
   }
-} 
-
+}
